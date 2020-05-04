@@ -1,3 +1,3 @@
 ### Formik form validation
 
-sudo npm install -g gh-pages --save-dev
+npm install gh-pages --save-dev
