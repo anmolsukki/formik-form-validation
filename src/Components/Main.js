@@ -1,22 +1,20 @@
 import React from 'react';
 import * as Yup from 'yup';
-import { Formik, FieldArray } from 'formik';
+import { Formik, FieldArray, withFormik } from 'formik';
 
-const Main = () => {
-
-    const [price, setPrice] = React.useState("")
-    const [yields, setYield] = React.useState("")
+const Main = (props) => {
 
     const getMarketPrice = (cleanPrice) => {
-        setPrice(cleanPrice)
         const yieldValue = cleanPrice * 2;
-        setYield(yieldValue)
+        props.handleChange(cleanPrice)
+        props.setFieldValue("indicativeClean", cleanPrice)
+        props.setFieldValue("indicativeYield", yieldValue)
     }
 
     const getMarketYield = (yieldValue) => {
-        setYield(yieldValue)
         const cleanValue = yieldValue / 2;
-        setPrice(cleanValue)
+        props.setFieldValue("indicativeYield", yieldValue)
+        props.setFieldValue("indicativeClean", cleanValue)
     }
 
     const validationSchema = Yup.object({
@@ -55,20 +53,19 @@ const Main = () => {
 			                            </div>
                                         <div className="input-group">
                                             <label>Indicative Clean</label>						
-                                            <input type="text" className="inputClass" name="indicativeClean" value={actions.values.indicativeClean} onChange={e => {
+                                            <input type="text" className="inputClass" name="indicativeClean" value={props.values.indicativeClean || actions.values.indicativeClean} onChange={e => {
                                                 actions.handleChange(e)
                                                 getMarketPrice(e.target.value)
-                                                actions.setFieldValue('indicativeYield', yields)
+                                                actions.values.indicativeYield = props.values.indicativeYield
                                                 actions.values.principal = actions.values.indicativeSize ? e.target.value * actions.values.indicativeSize : 0;
                                             }} />
                                             <div className="error-message">Indicative Clean is required.</div>
 			                            </div>
                                         <div className="input-group">
                                             <label>Indicative Yield</label>						
-                                            <input type="text" className="inputClass" name="indicativeYield" value={actions.values.indicativeYield} onChange={(e) => {
+                                            <input type="text" className="inputClass" name="indicativeYield" value={props.values.indicativeYield || actions.values.indicativeYield} onChange={(e) => {
                                                 actions.handleChange(e)
                                                 getMarketYield(e.target.value)
-                                                actions.setFieldValue('indicativeClean', price)
                                             }} />
                                             <div className="error-message">Indicative Yield is required.</div>
 			                            </div>
@@ -88,4 +85,6 @@ const Main = () => {
     )
 }
 
-export default Main;
+export default withFormik({
+    mapPropsToValues: () => ({ indicativeYield: '', indicativeClean: '' }),
+  })(Main)
