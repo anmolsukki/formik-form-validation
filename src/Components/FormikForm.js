@@ -1,7 +1,6 @@
 import React from 'react';
 import { Formik } from "formik";
 import * as Yup from "yup";
-import axios from "axios";
 import Error from "./Error"
 
 const ValidationSchema = Yup.object().shape({
@@ -20,24 +19,11 @@ class FormikForm extends React.Component {
             <Formik initialValues={{ password: "", email: "" }} validationSchema={ValidationSchema}
                 onSubmit={(values, { setSubmitting, resetForm }) => {
                     setSubmitting(true);
-                    axios
-                    .post("http://127.0.0.1:4000/api/v1/users/login", values)
-                    .then(res => {
-                        if (res.data.data.hasOwnProperty("token")) {
-                            localStorage.setItem("token", res.data.data.token);
-                            alert("Logged In Successfully!");
-                            this.props.history.push("/home")
-                        }
-                    })
-                    .catch(err => {
-                        alert("Either email or password is wrong!");
-                        console.log("Error=====>>>>", err)
-                    });
-                    // alert(JSON.stringify(values, null, 2));
+                    alert(`Email: ${values.email} \n Password: ${values.password}`)
                     resetForm();
                     setSubmitting(false);
                 }} >
-                {({ values, errors, touched, handleChange, handleBlur, handleSubmit, dirty, isValid }) => (
+                {({ values, errors, touched, dirty, isValid, handleChange, handleBlur, handleSubmit }) => (
                     <form onSubmit={handleSubmit}>
                         <div className="input-row">
                             <label htmlFor="email">Email</label>
